@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>POLLING AKHWAT</title>
+  <style>
+    .door-logo {
+  width: 350px;      /* ubah sesuai mau */
+  margin-bottom: 20px;
+  filter: drop-shadow(0 0 8px rgba(255,255,255,0.5));
+}
+/* === SUPER SLOW & SMOOTH CINEMATIC ZOOM === */
+@keyframes slowSmoothZoom {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+    filter: blur(0) brightness(1);
+  }
+
+  40% {
+    transform: scale(1.8);
+    opacity: 1;
+    filter: blur(0.5px) brightness(1.05);
+  }
+
+  70% {
+    transform: scale(3.2);
+    opacity: 0.95;
+    filter: blur(1.5px) brightness(1.15);
+  }
+
+  100% {
+    transform: scale(4.5);
+    opacity: 0;
+    filter: blur(4px) brightness(1.3);
+  }
+}
+.slow-zoom {
+  animation: slowSmoothZoom 2.2s cubic-bezier(0.25, 0.6, 0.35, 1) forwards;
+  transform-origin: center center;
+  will-change: transform, opacity, filter;
+  position: relative;
+  z-index: 1000000;
+}
+  .door-center {
+  position: absolute;
+  top: 12% !important;       /* paksa naik */
+  z-index: 99999 !important; /* pastikan di atas pintu */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+    :root{
+      --bg:#0b0f0a; 
+      --chalk:#f4f4f4;
+      --green:#0f2414;
+      --line:#ffffff22;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;
+      background:var(--bg);
+      font-family:'Times New Roman', serif;
+      display:flex;align-items:center;justify-content:center;padding:20px;
+      color:var(--chalk);
+    }
+    @font-face{
+      font-family:'Schoolbell';
+      src:local('Schoolbell'), url('https://fonts.gstatic.com/s/schoolbell/v14/92zQtBZWOrcgoe-fgnJIZxYl.woff2') format('woff2');
+    }
+    .wrap{width:100%;max-width:850px}
+
+    .card{
+      background:var(--green);
+      border:3px solid #0a160d;
+      padding:24px;border-radius:12px;
+      box-shadow:0 0 50px #000 inset;
+      color:var(--chalk);
+    }
+
+    h1{margin:0 0 6px;font-size:28px;color:var(--chalk);text-shadow:1px 2px #000}
+    p.lead{margin:0 0 18px;font-size:15px;color:#ffffffaa}
+
+    .option{padding:12px 10px;border-bottom:1px dashed var(--line)}
+    .option-row{display:flex;align-items:center;gap:14px;font-size:20px}
+
+    .opt-btn{
+      font-family:inherit;
+      padding:6px 10px;border:2px solid var(--chalk);
+      background:transparent;color:var(--chalk);
+      border-radius:6px;cursor:pointer;font-size:16px;
+    }
+    .opt-btn:hover{background:#ffffff22}
+
+    .percent{margin-left:auto;font-weight:700;font-size:20px}
+
+    .bar-wrap{
+  height:10px;
+  background:#ffffff22;
+  border-radius:99px;
+  margin-top:6px;
+}
+
+.bar{
+  height:100%;
+  width:0%;
+  background:var(--chalk);
+  transition:width .6s;
+
+  box-shadow:
+    0 0 8px  rgba(0, 150, 255, 0.8),
+    0 0 16px rgba(0, 150, 255, 0.6),
+    0 0 25px rgba(0, 150, 255, 0.4);
+}
+    .controls{display:flex;gap:10px;margin-top:14px}
+    input[type=text]{flex:1;padding:6px;border:2px solid #ffffff33;background:transparent;color:var(--chalk);border-radius:6px;font-family:inherit;font-size:16px}
+    button.primary{background:var(--chalk);color:var(--green);border:none;padding:8px 14px;border-radius:6px;font-family:inherit;font-weight:700;cursor:pointer;font-size:16px}
+    button.ghost{background:transparent;border:2px solid #ffffff33;color:var(--chalk);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:16px}
+
+    footer{margin-top:20px;font-size:14px;color:#ffffff88;text-align:center}
+    /* --- Winner Popup Animations & Glow --- */
+@keyframes zoomInWinner {
+  0% { transform: scale(0.4); opacity: 0; }
+  70% { transform: scale(1.07); opacity: 1; }
+  100% { transform: scale(1); }
+}
+.winner-anim {
+  animation: zoomInWinner 0.45s ease-out forwards;
+}
+.winner-glow {
+  box-shadow: 0 0 25px rgba(255,255,255,0.9), 0 0 50px rgba(255,255,255,0.4);
+}
+/* KONFETTI PRO EDITION */
+@keyframes confettiProFall {
+  0% { transform: translateY(-120vh) rotate(0deg) scale(1); opacity:1; }
+  100% { transform: translateY(120vh) rotate(720deg) scale(0.8); opacity:0; }
+}
+
+.confetti-pro {
+  position: fixed;
+  top: -20px;
+  pointer-events: none;
+  border-radius: 2px;
+  opacity: 0.95;
+  animation: confettiProFall var(--dur) linear forwards;
+  filter: drop-shadow(0 0 6px rgba(255,255,255,0.6));
+  z-index: 999999; /* 🔥 supaya di depan popup */
+}
+
+.confetti-star {
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 69% 57%, 
+                     79% 91%, 50% 70%, 21% 91%, 31% 57%, 2% 35%, 
+                     39% 35%);
+}
+/* ===== DOUBLE DOOR GATE ===== */
+#gateDoors.fade-out {
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+#gateDoors {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: #0b0f0a;
+  z-index: 999999;
+  overflow: hidden;
+}
+
+.door {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  background: #111;
+  transition: transform 1.2s cubic-bezier(.25, .8, .25, 1);
+  box-shadow: inset 0 0 80px #000;
+}
+
+.left-door {
+  left: 0;
+  transform-origin: left;
+}
+
+.right-door {
+  right: 0;
+  transform-origin: right;
+}
+
+.door-center {
+  position: absolute;
+  z-index: 5;
+  width: 100%;
+  top: 45%;
+  text-align: center;
+  color: white;
+  font-family: 'Times New Roman';
+}
+
+.door-title {
+  font-size: 28px;
+  margin-bottom: 15px;
+}
+
+.door-btn {
+  padding: 10px 20px;
+  font-size: 18px;
+  border: none;
+  background: white;
+  color: black;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform .2s;
+}
+
+.door-btn:hover {
+  transform: scale(1.07);
+}
+
+/* Doors opening animation */
+.door-open-left {
+  transform: translateX(-100%);
+}
+
+.door-open-right {
+  transform: translateX(100%);
+}
+
+/* fade out center text */
+.fade-center {
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+</style>
+</head>
+<body>
+  <script>
+</script>
+  <script>
+    <script>
+function openDoors() {
+  // Ambil elemen
+  const left = document.querySelector('.left-door');
+  const right = document.querySelector('.right-door');
+  const center = document.querySelector('.door-center');
+  const gate = document.getElementById('gateDoors');
+  
+  // mainkan animasi
+  center.classList.add('fade-center');
+  left.classList.add('door-open-left');
+  right.classList.add('door-open-right');
+
+  // setelah pintu terbuka, hilangkan layer gate
+  setTimeout(() => {
+    gate.style.display = 'none';
+  }, 1100);
+setTimeout(() => {
+  gate.style.display = 'none';
+}, 1400);
+}
+</script>
+<script>
+function openDoors() {
+  const left = document.querySelector('.left-door');
+  const right = document.querySelector('.right-door');
+  const center = document.querySelector('.door-center');
+  const gate = document.getElementById('gateDoors');
+
+  // fade title + button
+  center.classList.add('fade-center');
+
+  // animate doors sliding
+  left.classList.add('door-open-left');
+  right.classList.add('door-open-right');
+
+  // fade out gate background sedikit setelah pintu bergerak
+  setTimeout(() => {
+    gate.classList.add('fade-out');
+  }, 600);
+
+  // hide full gate after animation
+  setTimeout(() => {
+    gate.style.display = 'none';
+  }, 1400);
+}
+</script>
+</script>
+</script>
+<div id="gateDoors">
+  <div class="door left-door"></div>
+  <div class="door right-door"></div>
+  <div class="door-center">
+  <img src="osfor.png" class="door-logo">
+  <button class="door-btn" onclick="openDoors()">OPEN THE GATE</button>
+</div>
+</div>
+</div>
+  <audio id="winSound" src="charm.mp3" preload="auto"></audio>
+  <audio id="chalkSound" src="accept.mp3" preload="auto"></audio>
+  <audio id="gateSound"  src="whoosh.mp3" preload="auto"></audio>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>PAPAN PEMILIHAN WAKETOS OSFOR AKHWAT 26/27</h1>
+        <p class="lead">created by <i>sevendertial</i></p>
+      </div>
+    </header>
+    <div class="card" id="pollCard">
+      <div style="display:flex;gap:12px;align-items:center;justify-content:space-between;">
+        <strong id="question">PENGHITUNGAN SUARA</strong>
+        <div style="font-size:13px;color:var(--muted);">Total suara: <span id="totalVotes">0</span></div>
+      </div>
+
+      <div class="options" id="options"></div>
+
+      <div class="controls">
+        <input id="newOptInput" type="text" placeholder="Tambah pilihan baru, contoh : shalder" />
+        <button class="primary" id="addOpt">Tambah</button>
+        <button class="ghost" id="resetBtn" title="Reset semua suara">Reset</button>
+      </div>
+       <button onclick="showWinner()" class="primary" style="margin-top:15px;width: 100%;">
+     HASIL AKHIR
+       </button>
+      <footer>
+        <div>Disimpan di browser menggunakan <strong>localStorage</strong>.</div>
+         <p><i>Semua Hak Cipta Terlindungi 2025</p></i>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    // Simple offline polling app. Data stored in localStorage under key 'chalk_poll_v1'.
+    const STORAGE_KEY = 'chalk_poll_v1';
+
+    // default options
+    const DEFAULT = {
+      question: 'PENGHITUNGAN SUARA',
+      options: [
+        {id:1,label:'AZEL',votes:0,img:'azel.jpg'},
+        {id:2,label:'HANUNAH',votes:0,img:'hanuna.jpg'},
+        {id:3,label:'ZIA',votes:0,img:'zia.jpg'},
+        {id:4,label:'QUINZA',votes:0,img:'quinza.jpg'}
+      ]
+    }
+
+    function load() {
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return structuredClone(DEFAULT);
+        return JSON.parse(raw);
+      }catch(e){console.error('load fail',e);return structuredClone(DEFAULT)}
+    }
+
+    function save(state){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+    let state = load();
+
+    const optionsEl = document.getElementById('options');
+    const totalVotesEl = document.getElementById('totalVotes');
+    const questionEl = document.getElementById('question');
+
+    questionEl.textContent = state.question;
+
+    function totalVotes(){ return state.options.reduce((s,o)=>s+ (o.votes||0),0); }
+
+    function render(){
+    function playChalk(){
+    const s = document.getElementById("chalkSound");
+    s.currentTime = 0;
+    s.play();
+    }
+      optionsEl.innerHTML = '';
+      const total = totalVotes();
+      totalVotesEl.textContent = total;
+
+      state.options.sort((a,b)=>b.votes - a.votes).forEach(opt => {
+        const optWrap = document.createElement('div');
+        optWrap.className = 'option';
+
+        const row = document.createElement('div');
+        row.className = 'option-row';
+
+        const btn = document.createElement('button');
+        btn.className = 'opt-btn';
+        btn.innerText = 'Pilih';
+        btn.onclick = () => { 
+        vote(opt.id); 
+        playChalk();   // 🔊 PLAY SOUND
+        animatePulse(btn);   
+        }; 
+
+        // small title per candidate
+        const small = document.createElement('div');
+        small.style.fontSize = '14px';
+        small.style.opacity = '0.8';
+        small.innerText = 'Kandidat ' + opt.id;
+        row.appendChild(small);
+
+        const label = document.createElement('div');
+        label.className = 'opt-label';
+        label.innerText = opt.label;
+
+        const percent = document.createElement('div');
+        percent.className = 'percent';
+        const pct = total === 0 ? 0 : Math.round((opt.votes/total)*100);
+        percent.innerText = opt.votes + ' suara';
+
+        row.appendChild(btn);
+        // image
+        const img = document.createElement('img');
+        img.src = opt.img || 'https://via.placeholder.com/60?text=Foto';
+        img.style.width='55px';
+        img.style.height='55px';
+        img.style.borderRadius='6px';
+        img.style.objectFit='cover';
+        row.appendChild(img);
+        row.appendChild(label);
+        row.appendChild(percent);
+
+        const barWrap = document.createElement('div');
+        barWrap.className = 'bar-wrap';
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+        // set width after a tiny delay for smooth transition
+        requestAnimationFrame(()=>{ bar.style.width = pct + '%'; });
+        barWrap.appendChild(bar);
+
+        // small helper: remove option long-press (or click while holding shift)
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'ghost';
+        removeBtn.style.marginLeft='8px';
+        removeBtn.style.fontSize='12px';
+        removeBtn.innerText='Remove';
+        removeBtn.title = '-1 vote?';
+        removeBtn.onclick = (e)=>{ e.stopPropagation(); if(confirm('-1 vote  "'+opt.label+'"?')){ minusOption(opt.id); } };
+
+        optWrap.appendChild(row);
+        optWrap.appendChild(barWrap);
+        // show small remove button under bar for clarity
+        const rmRow = document.createElement('div'); rmRow.style.display='flex'; rmRow.style.justifyContent='flex-end'; rmRow.style.marginTop='6px'; rmRow.appendChild(removeBtn);
+        optWrap.appendChild(rmRow);
+
+        optionsEl.appendChild(optWrap);
+      });
+    }
+
+    function vote(id){
+      const opt = state.options.find(o=>o.id===id);
+      if(!opt) return;
+      opt.votes = (opt.votes||0) + 1;
+      save(state);
+      render();
+    }
+
+    function addOption(label){
+      if(!label || !label.trim()) return;
+      const maxId = state.options.reduce((m,o)=>Math.max(m,o.id),0);
+      state.options.push({id: maxId+1, label: label.trim(), votes:0});
+      save(state); render();
+    }
+
+    function minusOption(id){
+       const opt = state.options.find(o => o.id === id);
+      if (!opt) return;
+      if (opt.votes > 0) {
+      opt.votes -= 1;
+      }
+      save(state);
+      render();
+    }
+
+    function resetAll(){ if(!confirm('Reset semua suara dan kembalikan nilai default?')) return; localStorage.removeItem(STORAGE_KEY); state = load(); render(); }
+
+    // small button pulse animation
+    function animatePulse(el){ el.animate([{transform:'scale(1)'},{transform:'scale(0.96)'},{transform:'scale(1)'}],{duration:260}); }
+
+    // wire controls
+    document.getElementById('addOpt').onclick = ()=>{ const v = document.getElementById('newOptInput').value; addOption(v); document.getElementById('newOptInput').value=''; }
+    document.getElementById('resetBtn').onclick = resetAll;
+
+    // initial render
+    render();
+
+    // allow pressing Enter to add
+    document.getElementById('newOptInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ document.getElementById('addOpt').click(); } });
+
+    // expose helpers to console for quick debug
+    window.pollState = ()=>state;
+    window.pollReset = ()=>{ localStorage.removeItem(STORAGE_KEY); state=load(); render(); }
+    </script>
+<footer style="text-align:center; margin-top:40px; font-size:14px; opacity:0.7; font-family:'Times New Roman', serif;"></footer>
+<div id="winnerPopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); align-items:center; justify-content:center; z-index:9999;">
+<div id="winnerBox" style="background:#fff; padding:26px; border-radius:14px; text-align:center; max-width:380px;">
+
+<h3 style="margin:0 0 10px; font-size:20px; color:#000; font-weight:bold;">WAKETOS AKHWAT MB 26/27</h3>
+</h3>
+<img id="winnerImg" src="" 
+    style="width:250px; height:300px; border-radius:12px; object-fit:cover; margin-bottom:16px;" 
+    class="winner-glow">
+
+<h2 id="winnerName" style="margin:0; font-size:22px; color:#000;"></h2>
+<p id="winnerVotes" style="margin:6px 0 12px; font-size:18px; color:#333;"></p>
+<button onclick="closeWinner()" style="padding:8px 14px; border:none; background:#333; color:white; border-radius:6px; cursor:pointer;">Tutup</button>
+</div>
+</div>
+<script>
+ function dropConfettiPro(){
+  for(let i = 0; i < 45; i++){
+    const c = document.createElement("div");
+    c.className = "confetti-pro";
+
+    // posisi horizontal acak
+    c.style.left = Math.random() * 100 + "vw";
+
+    // ukuran acak
+    const size = (8 + Math.random()*12);
+    c.style.width = size + "px";
+    c.style.height = size + "px";
+
+    // warna neon random
+    const hue = Math.floor(Math.random()*360);
+    c.style.background = `hsl(${hue}, 85%, 60%)`;
+
+    // durasi jatuh acak (biar ada yang cepat – lambat)
+    c.style.setProperty("--dur", (1.4 + Math.random()*1.2) + "s");
+
+    // bentuk random: kotak, bulat, bintang
+    const shape = Math.floor(Math.random()*3);
+    if(shape === 1){
+      c.style.borderRadius = "50%";
+    } else if(shape === 2){
+      c.classList.add("confetti-star");
+    }
+
+    document.body.appendChild(c);
+
+    // hapus setelah selesai
+    setTimeout(()=> c.remove(), 2600);
+  }
+}
+function showWinner(){
+  const max = Math.max(...state.options.map(o=>o.votes));
+  const win = state.options.find(o=>o.votes===max);
+  if(!win) return;
+
+  document.getElementById('winnerImg').src = win.img;
+  document.getElementById('winnerName').innerText = win.label;
+  document.getElementById('winnerVotes').innerText = win.votes + ' suara';
+  dropConfettiPro();
+
+  const popup = document.getElementById('winnerPopup');
+  const box = document.getElementById('winnerBox');
+
+  popup.style.display = 'flex';
+
+  // reset animasi supaya bisa muncul lagi
+  box.classList.remove('winner-anim');
+  void box.offsetWidth;
+  box.classList.add('winner-anim');
+
+  // play sound charming
+  const s = document.getElementById('winSound');
+  if(s){
+    s.currentTime = 0;
+    s.play();
+  }
+}
+function closeWinner(){ document.getElementById('winnerPopup').style.display='none'; }
+</script>  
+<script>
+function openDoors() {
+  const left  = document.querySelector('.left-door');
+  const right = document.querySelector('.right-door');
+  const center = document.querySelector('.door-center');
+  const gate = document.getElementById('gateDoors');
+  const sound = document.getElementById('gateSound');
+  const logo  = document.getElementById('gateLogo');
+
+  // 🔊 sound
+  sound.pause();
+  sound.currentTime = 0;
+  sound.play().catch(()=>{});
+
+  // 🔥 zoom logo HALUS
+  if (logo) {
+    logo.classList.remove("smooth-zoom"); // reset kalau spam klik
+    void logo.offsetWidth;               // force reflow
+    logo.classList.add("smooth-zoom");
+  }
+
+  // delay dikit biar zoom terasa dulu (biar cinematic)
+  setTimeout(() => {
+    center.classList.add('fade-center');
+    left.classList.add('door-open-left');
+    right.classList.add('door-open-right');
+  }, 250);
+
+  setTimeout(() => {
+    gate.classList.add('fade-out');
+  }, 700);
+
+  setTimeout(() => {
+    gate.style.display = 'none';
+  }, 1500);
+}
+</script>
+<script>
+window.addEventListener("load", () => {
+  const logo = document.getElementById("gateLogo");
+  if (logo) {
+    logo.classList.add("logo-cinematic", "logo-glow");
+  }
+});
+</script>
+</body>
+</html>
